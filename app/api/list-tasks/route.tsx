@@ -1,16 +1,24 @@
+import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function GET() {
   try {
-    const tasks = [
-      { id: 1, titulo: 'Tarefa de Exemplo 1', descricao: 'Descrição de exemplo para a Tarefa 1.', categoria: 'eletrica' },
-      { id: 2, titulo: 'Tarefa de Exemplo 2', descricao: 'Descrição de exemplo para a Tarefa 2.', categoria: 'hidraulica' },
-      { id: 3, titulo: 'Tarefa de Exemplo 3', descricao: 'Descrição de exemplo para a Tarefa 3.', categoria: 'limpeza' },
-    ];
-    
+    const { data: tasks, error } = await supabase.from('tarefas').select('*');
+
+    if (error) {
+      console.error('Erro ao buscar tarefas:', error);
+      return NextResponse.json({ error: 'Erro ao buscar tarefas.' }, { status: 500 });
+    }
+
     return NextResponse.json({ tasks });
 
-  } catch (error) {
-    return NextResponse.json({ error: 'Erro ao processar a requisição.' }, { status: 500 });
+  } catch (err) {
+    console.error('Erro desconhecido:', err);
+    return NextResponse.json({ error: 'Ocorreu um erro desconhecido.' }, { status: 500 });
   }
 }
