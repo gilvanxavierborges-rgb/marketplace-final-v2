@@ -14,7 +14,7 @@ export default function HomePage() {
 
         if (!response.ok) {
           throw new Error(data.error || 'Erro ao carregar as tarefas.');
-        }
+        } 
 
         setTasks(data.tasks);
       } catch (err: any) {
